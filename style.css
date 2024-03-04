@@ -10,8 +10,12 @@
     height: 100vh;
     background-image: url('./Dash\ background\ \(Light\).png');
     background-position: center;
-    background-size:auto;
-    background-repeat: no-repeat;
+    background-size:cover;
+    background-repeat:repeat;
+}
+
+.dark {
+    background-image: url('./Dash\ background\ \(Dark\).png');
 }
 
 .header {
@@ -55,7 +59,7 @@
     }
 
     .header__search-input::placeholder {
-        color: black;
+        color: grey;
         font-weight: light;
     }
 
@@ -99,5 +103,9 @@
         background: black;
         color: white;
         border-radius: 20px;
+    }
+
+    .none {
+        display: none;
     }
 }
