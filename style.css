@@ -11,19 +11,42 @@
     background-position: center;
     background-size: cover;
     background-repeat: repeat;
-    background-color: #98cfce;
+    background-image: linear-gradient(0deg,
+            hsl(206deg 100% 50%) 0%,
+            hsl(203deg 100% 50%) 21%,
+            hsl(200deg 100% 49%) 30%,
+            hsl(197deg 100% 48%) 39%,
+            hsl(194deg 100% 46%) 46%,
+            hsl(193deg 78% 52%) 54%,
+            hsl(191deg 67% 58%) 61%,
+            hsl(188deg 57% 62%) 69%,
+            hsl(184deg 46% 66%) 79%,
+            hsl(179deg 36% 70%) 100%);
     overflow: hidden;
 }
 
 .dark {
-    background-color: #1c2637;
+    background-image: linear-gradient(180deg,
+            hsl(218deg 33% 16%) 0%,
+            hsl(230deg 31% 18%) 18%,
+            hsl(239deg 31% 20%) 26%,
+            hsl(247deg 36% 21%) 33%,
+            hsl(251deg 42% 22%) 39%,
+            hsl(255deg 47% 23%) 44%,
+            hsl(258deg 52% 24%) 50%,
+            hsl(260deg 58% 25%) 56%,
+            hsl(261deg 64% 26%) 61%,
+            hsl(263deg 70% 26%) 67%,
+            hsl(265deg 78% 27%) 74%,
+            hsl(266deg 88% 27%) 82%,
+            hsl(268deg 100% 26%) 100%);
 }
 
 .fa-moon {
     color: rgb(178, 219, 255);
 }
 
-.fa-sun{
+.fa-sun {
     color: yellow;
 }
 
@@ -34,12 +57,7 @@
     align-items: center;
     box-sizing: border-box;
     padding: 1rem;
-    /* background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 32px 0 #00000045; */
-    /* backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px); */
     border-radius: 10px;
-    /* border: 1px solid rgba(255, 255, 255, 0.18); */
 
     .header__greeting {
         color: black;
@@ -64,6 +82,7 @@
         background-color: transparent;
         border: none;
         outline: none;
+        color: white;
     }
 
     .header__search-input::placeholder {
@@ -147,12 +166,7 @@
         justify-content: space-between;
         box-sizing: border-box;
         padding: 1rem;
-        /* background: rgba(255, 255, 255, 0.05); */
-        /* box-shadow: 0 8px 32px 0 #00000045; */
-        /* backdrop-filter: blur(10px); */
-        /* -webkit-backdrop-filter: blur(10px); */
         border-radius: 20px;
-        /* border: 1px solid rgba(255, 255, 255, 0.18); */
         height: 35vh;
     }
 
@@ -206,7 +220,7 @@
         justify-content: space-between;
     }
 
-    .forecast__timedate-wrapper{
+    .forecast__timedate-wrapper {
         display: flex;
         width: fit-content;
     }
