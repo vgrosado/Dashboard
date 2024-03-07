@@ -100,6 +100,7 @@ function handleTheme() {
 };
 
 function updateWeather(forecast) {
+    
     const location = document.getElementById('#location')
     if (forecast.city) {
     location.innerText = forecast.city.name;
@@ -125,7 +126,7 @@ function updateWeather(forecast) {
     const details = document.getElementById('#details')
     details.innerText = forecast.weather[0].description;
     }
-        
+
 
 
 
