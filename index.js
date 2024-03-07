@@ -6,6 +6,7 @@ let today = new Date();
 let weekday = new Intl.DateTimeFormat("en-us", { weekday: "long" }).format(today);
 let userLatitude = null;
 let userLongitude = null;
+const loading = document.querySelector('.forecast__spinner')
 
     function getUserLocation(lat, lon){
         axios 
@@ -14,18 +15,22 @@ let userLongitude = null;
                 forecast = response.data;
                 console.log(forecast)
                 updateWeatherCard(forecast)
+                loading.classList.add('no')
             })
             .catch((error) => {
                 console.error("Error fetching data:", error);
             });
     };
 
-    async function getPosition() { navigator.geolocation.getCurrentPosition((position) => {
+    async function getPosition() { 
+        navigator.geolocation.getCurrentPosition((position) => {
         userLatitude = position.coords.latitude;
         userLongitude = position.coords.longitude;
         console.log(userLatitude + "" + userLongitude)
         getUserLocation(userLatitude, userLongitude);
         })
+        loading.src = "spinner.gif";
+        loading.classList.remove('no')
     };
     getPosition();
 

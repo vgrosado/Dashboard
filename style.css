@@ -110,9 +110,19 @@
     }
 }
 
+.no {
+    display: none;
+}
+
 .forecast {
     height: 50vh;
     width: 100%;
+
+    .forecast__spinner {
+        align-self: center;
+        height: 100px;
+        width: 100px;
+    }
 
     .forecast__weather-wrapper {
         height: 100%;
