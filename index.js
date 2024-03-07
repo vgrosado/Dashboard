@@ -6,7 +6,9 @@ let today = new Date();
 let weekday = new Intl.DateTimeFormat("en-us", { weekday: "long" }).format(today);
 let userLatitude = null;
 let userLongitude = null;
-const loading = document.querySelector('.forecast__spinner')
+const loading = document.querySelector('.forecast__spinner');
+const locationIcon = document.getElementById('#locationicon')
+const gif = document.getElementById('#gif');
 
     function getUserLocation(lat, lon){
         axios 
@@ -16,6 +18,8 @@ const loading = document.querySelector('.forecast__spinner')
                 console.log(forecast)
                 updateWeatherCard(forecast)
                 loading.classList.add('no')
+                gif.classList.remove('no')
+                locationIcon.classList.remove('no')
             })
             .catch((error) => {
                 console.error("Error fetching data:", error);
@@ -31,6 +35,8 @@ const loading = document.querySelector('.forecast__spinner')
         })
         loading.src = "spinner.gif";
         loading.classList.remove('no')
+        gif.classList.add('no')
+        locationIcon.classList.add('no')
     };
     getPosition();
 
@@ -99,15 +105,15 @@ function updateWeatherCard(forecast) {
 
     const temp = document.getElementById('#temp')
     if (forecast.list) {
-    temp.innerText = parseInt(forecast.list[0].main.temp - 273.15) * 9/5 + 32;
+    temp.innerText =  Math.floor(parseInt((forecast.list[0].main.temp - 273.15) * 9/5 + 32)) + "°";
     } else if (forecast.main.temp) {
-        temp.innerText = parseInt(forecast.main.temp - 273.15) * 9/5 + 32;
+        temp.innerText = Math.floor(parseInt((forecast.main.temp - 273.15) * 9/5 + 32)) + "°";
     }
 
-    const icon = document.getElementById('#icon');
+   
 
     const details = document.getElementById('#details')
-    details.innerText
+    details.innerText = forecast.weather[0].description;
     }
         
 

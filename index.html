@@ -32,19 +32,24 @@
     <section class="forecast">
         <h1 class="forecast__title">Forecast</h1>
         <div class="forecast__weather-wrapper">
-            <article class="forecast__weather-card" type="image/gif" id="weathercard">
+            <article class="forecast__weather-card" id="weathercard">
                 <img class="forecast__spinner" id="#loading" src="">
-                <h3 class="forecast__location" id="#location"></h3>
-                <div class="forecast__timedate-wrapper">
-                    <p class="forecast__date" id="#date"></p>
-                    <p class="forecast__time" id="#time"></p>
-                </div>
                 <div class="forecast__tempicon-wrapper">
-                    <p class="forecast__temp" id="#temp"></p>
-                    <i class="forecast__icon" id="icon"></i>
+                    <div class="forecast__temp-wrapper">
+                        <p class="forecast__temp" id="#temp"></p>
+                        <p class="forecast__details" id="#details"></p>
+                    </div>
+                    <img class="forecast__icon" src="./sunny.gif" id="#gif"></img>
                 </div>
-                <div class="forecast__category">
-                    <p class="forecast__details" id="#details"></p>
+                <div class="forecast__timedatelocation-wrapper">
+                    <div class="forecast__location-wrapper">
+                        <i class="fas fa-map-marker-alt" id="#locationicon"></i>
+                        <h3 class="forecast__location" id="#location"></h3>
+                    </div>
+                    <div class="forecast__timedate-wrapper">
+                        <p class="forecast__date" id="#date"></p>
+                        <p class="forecast__time" id="#time"></p>
+                    </div>
                 </div>
             </article>
         </div>
