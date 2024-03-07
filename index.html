@@ -31,8 +31,22 @@
     </header>
     <section class="forecast">
         <h1 class="forecast__title">Forecast</h1>
-        <h2 class="forecast__title">Today</h2>
-        <div class="forecast__weather-wrapper"></div>
+        <div class="forecast__weather-wrapper">
+            <article class="forecast__weather-card">
+                <h3 class="forecast__location" id="#location"></h3>
+                <div class="forecast__timedate-wrapper">
+                    <p class="forecast__date" id="#date"></p>
+                    <p class="forecast__time" id="#time"></p>
+                </div>
+                <div class="forecast__tempicon-wrapper">
+                    <p class="forecast__temp" id="#temp"></p>
+                    <i class="forecast__icon" id="icon"></i>
+                </div>
+                <div class="forecast__category">
+                    <p class="forecast__details" id="#details"></p>
+                </div>
+            </article>
+        </div>
     </section>
 </body>
 

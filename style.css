@@ -132,6 +132,16 @@
         height: 100%;
     }
 
+    .forecast__timedatelocation-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .forecast__location {
+        align-self: center;
+        font-size: 2rem;
+    }
+
     .forecast__timedate-wrapper {
         width: 100%;
         display: flex;
