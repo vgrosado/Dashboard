@@ -1,6 +1,7 @@
 const APIKEY = "bedd81aab35b46aee7f7356339be92b1";
 let city = "";
 let forecast;
+let hourlyForecast;
 let userForecast;
 let today = new Date();
 let weekday = new Intl.DateTimeFormat("en-us", { weekday: "long" }).format(today);
@@ -10,18 +11,29 @@ const loading = document.querySelector('.forecast__spinner');
 const locationIcon = document.getElementById('#locationicon')
 const gif = document.getElementById('#gif');
 
-    function getUserLocation(lat, lon){
+    // get users current weather
+    function getUserWeather(lat, lon){
         axios 
             .get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIKEY}`)
             .then((response) => {
                 forecast = response.data;
                 console.log(forecast)
-                updateWeatherCard(forecast)
+                updateWeather(forecast)
+                loading.classList.add('no')
+                gif.classList.remove('no')
+                locationIcon.classList.remove('no')
+            }).then(() => {
+                axios
+                .get(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${APIKEY}`)
+                .then((response) => {
+                    hourlyForecast = response.data;
+                    console.log(hourlyForecast)
+                hourlyForecast = response.data;
                 loading.classList.add('no')
                 gif.classList.remove('no')
                 locationIcon.classList.remove('no')
             })
-            .catch((error) => {
+            }).catch((error) => {
                 console.error("Error fetching data:", error);
             });
     };
@@ -31,7 +43,7 @@ const gif = document.getElementById('#gif');
         userLatitude = position.coords.latitude;
         userLongitude = position.coords.longitude;
         console.log(userLatitude + "" + userLongitude)
-        getUserLocation(userLatitude, userLongitude);
+        getUserWeather(userLatitude, userLongitude);
         })
         loading.src = "spinner.gif";
         loading.classList.remove('no')
@@ -53,7 +65,7 @@ function handleSearch(city) {
             .get(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${APIKEY}`)
             .then((response) => {
                 forecast = response.data;
-                updateWeatherCard(forecast)
+                updateWeather(forecast)
             })
             .catch((error) => {
                 console.error("Error fetching data:", error);
@@ -87,7 +99,7 @@ function handleTheme() {
     };
 };
 
-function updateWeatherCard(forecast) {
+function updateWeather(forecast) {
     const location = document.getElementById('#location')
     if (forecast.city) {
     location.innerText = forecast.city.name;
@@ -109,8 +121,6 @@ function updateWeatherCard(forecast) {
     } else if (forecast.main.temp) {
         temp.innerText = Math.floor(parseInt((forecast.main.temp - 273.15) * 9/5 + 32)) + "°";
     }
-
-   
 
     const details = document.getElementById('#details')
     details.innerText = forecast.weather[0].description;
