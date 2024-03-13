@@ -10,6 +10,8 @@ let localTime = new Date().toLocaleTimeString('en-US', {
 	hour: 'numeric', minute: 'numeric', hour12: true
 });
 let UTC = new Date().getTime();
+let lowTemp; 
+let highTemp; 
 let sunrise;
 let sunset;
 let weekday = new Intl.DateTimeFormat("en-us", { weekday: "long" }).format(new Date());
@@ -27,6 +29,7 @@ function getUserWeather(lat, lon) {
 			weather = response.data;
 			userWeather = weather?.timezone;
 			updateWeather(weather)
+			console.log(weather)
 			loading.classList.add('no')
 			weatherIcon.classList.remove('no')
 			locationIcon.classList.remove('no')
@@ -137,6 +140,8 @@ function updateWeather(weather) {
 	sunset = weather?.sys?.sunset * 1000;
 	sunrise = weather?.sys?.sunrise * 1000;
 	weatherDescription = weather.weather[0].description;
+	highTemp = Math.floor(parseInt((weather.main.temp_max - 273.15) * 9 / 5 + 32)) + "°";
+	lowTemp = Math.floor(parseInt((weather.main.temp_min - 273.15) * 9 / 5 + 32)) + "°";
 	const newTime = new Date();
 
 	if(sunset <= UTC) {
@@ -210,8 +215,8 @@ const hourlyForecastList = document.querySelector('.hourly-forecast__list');
 function updateForecast(hourlyWeather) {
 	
 	let mainWeather;
-	let lowTemp = Math.floor(parseInt(hourlyWeather?.main?.temp_min - 273.15) * 9 / 5 + 32) + "°";
-	let highTemp = Math.floor(parseInt(hourlyWeather?.main?.temp_max - 273.15) * 9 / 5 + 32) + "°";
+	console.log("high " + highTemp)
+	console.log("low " + lowTemp)
 
 	if (hourlyWeather.weather === undefined) {
 		mainWeather = null;
@@ -273,7 +278,7 @@ function updateForecast(hourlyWeather) {
 function createHourlyItem(hourlyForecast) {
 
 	hourlyForecastList.innerHTML = "";
-	
+
 	const limit = Math.min(hourlyForecast.length, 3);
 	for(let i = 0; i < limit; i++){
 		let h = hourlyForecast[i]
