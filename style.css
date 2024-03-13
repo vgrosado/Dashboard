@@ -10,7 +10,7 @@
     height: 100vh;
     background-position: center;
     background-size: cover;
-    background-repeat: repeat;
+    background-repeat: no-repeat;
     background-image: linear-gradient(0deg,
             hsl(206deg 100% 50%) 0%,
             hsl(203deg 100% 50%) 21%,
@@ -22,7 +22,7 @@
             hsl(188deg 57% 62%) 69%,
             hsl(184deg 46% 66%) 79%,
             hsl(179deg 36% 70%) 100%);
-    overflow: hidden;
+    overflow: auto;
 }
 
 .dark {
@@ -238,15 +238,65 @@
         color: white;
     }
 
-    .forecast__hourly-forecast-wrapper {
-        margin-top: 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        background: rgba(255, 255, 255, 0.05);
-        box-shadow: 0 8px 32px 0 #00000045;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-radius: 20px;
-        height: 20dvh;
+}
+
+.hourly-forecast {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: .5rem;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 #00000045;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    height: 25vh;
+    width: 100%;
+ 
+
+    .hourly-forecast__details {
+        box-sizing: border-box;
+        padding: .5rem;
+        font-size: .875rem;
+        font-weight: 400;
+        text-align: center;
+        color: white;
+        text-transform: capitalize;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
     }
 
+    .hourly-forecast__list {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        padding: .5rem 0rem;
+    }
+
+    .hourly-forecast__item {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+    }
+
+    .hourly-forecast__hour{
+        color: white;
+        font-weight: 200;
+    }
+
+    .hourly-forecast__weathericon {
+        height: 50%;
+        width: 60%;
+    }
+
+    .hourly-forecast__temp {
+        color: white;
+        font-size: 1.25rem;
+    }
 }
+

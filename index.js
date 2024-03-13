@@ -1,11 +1,17 @@
 const APIKEY = "bedd81aab35b46aee7f7356339be92b1";
 let city = "";
 let weather;
+let weatherDescription = "";
 let userWeather;
 let forecast;
+let hourlyWeather;
+let timezone = "";
 let localTime = new Date().toLocaleTimeString('en-US', {
 	hour: 'numeric', minute: 'numeric', hour12: true
 });
+let UTC = new Date().getTime();
+let sunrise;
+let sunset;
 let weekday = new Intl.DateTimeFormat("en-us", { weekday: "long" }).format(new Date());
 let userLatitude = null;
 let userLongitude = null;
@@ -19,8 +25,7 @@ function getUserWeather(lat, lon) {
 		.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIKEY}`)
 		.then((response) => {
 			weather = response.data;
-			userWeather = weather.timezone;
-			console.log(weather)
+			userWeather = weather?.timezone;
 			updateWeather(weather)
 			loading.classList.add('no')
 			weatherIcon.classList.remove('no')
@@ -30,6 +35,9 @@ function getUserWeather(lat, lon) {
 				.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${APIKEY}`)
 				.then((response) => {
 					forecast = response.data;
+					hourlyWeather = forecast?.list;
+					updateForecast(hourlyWeather);
+					createHourlyItem(hourlyWeather)
 					loading.classList.add('no')
 					weatherIcon.classList.remove('no')
 					locationIcon.classList.remove('no')
@@ -38,6 +46,9 @@ function getUserWeather(lat, lon) {
 			console.error("Error fetching data:", error);
 		});
 };
+
+
+
 
 //access user device's GPS
 async function getPosition() {
@@ -54,6 +65,8 @@ async function getPosition() {
 };
 getPosition();
 
+
+
 //triggers api call based on search input
 const searchInput = document.getElementById('#search');
 searchInput.addEventListener('change', (event) => {
@@ -61,6 +74,8 @@ searchInput.addEventListener('change', (event) => {
 	console.log(city)
 	handleSearch(city)
 })
+
+
 
 //function to take city input and call api for weather
 function handleSearch(city) {
@@ -76,6 +91,9 @@ function handleSearch(city) {
 				.get(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${APIKEY}`)
 				.then((response) => {
 					forecast = response.data;
+					hourlyWeather = forecast?.list;
+					updateForecast(hourlyWeather);
+					createHourlyItem(hourlyWeather)
 					loading.classList.add('no')
 					weatherIcon.classList.remove('no')
 					locationIcon.classList.remove('no')
@@ -116,10 +134,18 @@ function handleTheme() {
 
 //update weather card with weather variable
 function updateWeather(weather) {
+	sunset = weather?.sys?.sunset * 1000;
+	sunrise = weather?.sys?.sunrise * 1000;
+	weatherDescription = weather.weather[0].description;
 	const newTime = new Date();
 
+	if(sunset <= UTC) {
+		body.classList.add('dark')
+	} else {
+		body.classList.remove('dark')
+	}
+
 	//check city timezone wit regional US timeZones
-	let timezone = "";
 	switch (weather.timezone) {
 		case -14400:
 			timezone = "America/New_York"
@@ -141,25 +167,23 @@ function updateWeather(weather) {
 		localTime = localTimeInTargetZone;
 	}
 
-	let sunset = new Date(weather.sys.sunset * 1000).toLocaleTimeString();
-
 	const temp = document.getElementById('#temp')
 	temp.innerText = Math.floor(parseInt((weather.main.temp - 273.15) * 9 / 5 + 32)) + "°";
 
 	//set weather icon, checks against current city conditions & local time vs sunset
-	if (weather.weather[0].main.includes("Clouds") && sunset < localTime) {
+	if (weather.weather[0].main === "Clouds" && sunset > UTC) {
+		weatherIcon.src = "./Assets/partly-cloudy-day.svg"
+	} else if (weather.weather[0].main === "Clouds" && sunset <= UTC) {
 		weatherIcon.src = "./Assets/partly-cloudy-night.svg"
-	} else if (weather.weather[0].main.includes("Clouds") && sunset > localTime) {
-		weatherIcon.src = "./Assets/partly-cloudy-day.svg"
-	} else if (weather.weather[0].main.includes("Rain") && sunset < localTime) {
+	} else if (weather.weather[0].main === "Rain" && sunset > UTC) {
+		weatherIcon.src = "./Assets/partly-cloudy-day-rain.svg"
+	} else if (weather.weather[0].main === "Rain" && sunset <= UTC) {
 		weatherIcon.src = "./Assets/partly-cloudy-night-rain.svg"
-	} else if (weather.weather[0].main.includes("Rain") && sunset > localTime) {
-		weatherIcon.src = "./Assets/partly-cloudy-day.svg"
-	} else if (weather.weather[0].main.includes("Snow") && sunset < localTime) {
+	} else if (weather.weather[0].main.includes("Snow") && sunset > UTC) {
 		weatherIcon.src = "./Assets/partly-cloudy-day-snow.svg"
-	} else if (weather.weather[0].main.includes("Snow") && sunset > localTime) {
+	} else if (weather.weather[0].main.includes("Snow") && sunset <= UTC) {
 		weatherIcon.src = "./Assets/partly-cloudy-night-snow.svg"
-	} else if (sunset > localTime) {
+	} else if (sunset < localTime) {
 		weatherIcon.src = "./Assets/clear-night.svg"
 	} else {
 		weatherIcon.src = "./Assets/clear-day.svg"
@@ -178,70 +202,87 @@ function updateWeather(weather) {
 	const time = document.getElementById('#time')
 	time.innerText = localTime;
 
-
-
-	// const foreCastSection = document.querySelector('.forecast__weather-wrapper');
-
-	// function createWeatherCard(forecast) {
-	//     const weatherCard = document.createElement('article');
-	//     weatherCard.classList.add('forecast__weather-card');
-
-	//     const timeDateLocationWrapper = document.createElement('div');
-	//     timeDateLocationWrapper.classList.add('forecast__timedatelocation-wrapper');
-	//     const location = document.createElement('h3');
-	//     location.classList.add('forecast__location');
-	//     location.innerText = forecast.city.name;
-
-	//     const timeDateWrapper = document.createElement('div');
-	//     timeDateWrapper.classList.add('forecast__timedate-wrapper');
-
-	//     const date = document.createElement('h2');
-	//     date.classList.add('forecast__date');
-	//     date.innerText = weekday;
-
-	//     const time = document.createElement('p');
-	//     time.classList.add('forecast__time');
-	//     time.innerText = today.toLocaleTimeString(undefined, {
-	//         hour: 'numeric', minute: 'numeric', hour12: true 
-	//     });
-
-	//     const tempIconWrapper = document.createElement('div');
-	//     tempIconWrapper.classList.add('forecast__tempicon-wrapper');
-
-	//     const temp = document.createElement('p');
-	//     temp.classList.add('forecast__temp');
-	//     let temperature =  parseInt(forecast.list[0].main.temp - 273.15) * 9/5 + 32;
-	//     temp.innerText = temperature;
-	//     const weatherIcon = document.createElement('i');
-	//     weatherIcon.classList.add('forecast__weathericon');
-
-	//     const detailsWrapper = document.createElement('div');
-	//     detailsWrapper.classList.add('forecast__details-wrapper');
-
-	//     const category = document.createElement('p');
-	//     category.classList.add('forecast__category');
-	//     const categoryDetails = document.createElement('p');
-	//     categoryDetails.classList.add('forecast__details');
-
-	//     timeDateLocationWrapper.appendChild(location)
-	//     timeDateLocationWrapper.appendChild(timeDateWrapper)
-
-	//     timeDateWrapper.appendChild(date);
-	//     timeDateWrapper.appendChild(time);
-
-	//     tempIconWrapper.appendChild(temp);
-	//     tempIconWrapper.appendChild(weatherIcon);
-
-	//     detailsWrapper.appendChild(category);
-	//     detailsWrapper.appendChild(categoryDetails);
-
-	//     weatherCard.appendChild(timeDateLocationWrapper);
-	//     weatherCard.appendChild(timeDateWrapper);
-	//     weatherCard.appendChild(tempIconWrapper);
-	//     weatherCard.appendChild(detailsWrapper);
-
-	//     foreCastSection.appendChild(weatherCard);
-
-	//     return weatherCard;
-	// }
 }
+
+
+const hourlyForecastList = document.querySelector('.hourly-forecast__list');
+
+function updateForecast(hourlyWeather) {
+	
+	let mainWeather;
+	let lowTemp = Math.floor(parseInt(hourlyWeather?.main?.temp_min - 273.15) * 9 / 5 + 32) + "°";
+	let highTemp = Math.floor(parseInt(hourlyWeather?.main?.temp_max - 273.15) * 9 / 5 + 32) + "°";
+
+	if (hourlyWeather.weather === undefined) {
+		mainWeather = null;
+	} else {
+		mainWeather = hourlyWeather.weather[0].main;
+	}
+	let hours = hourlyWeather?.dt * 1000;
+
+	let details = document.getElementById('#work')
+
+	if(sunset >= UTC) {
+		details.innerText = weatherDescription + "." + " High for the day is " + highTemp;
+	} else {
+		details.innerText = weatherDescription + "." + " Low for the night is " + lowTemp;
+	}
+	
+	let hourlyItem = document.createElement('li');
+	hourlyItem.classList.add('hourly-forecast__item');
+	
+
+	let hourly = document.createElement('p')
+	hourly.classList.add('hourly-forecast__hour');
+	hourly.innerText = new Date(hours).toLocaleString('en-US', {
+		timeZone: timezone, hour: 'numeric', hour12: true
+	});
+
+	let hourlyWeatherIcon = document.createElement('img');
+	hourlyWeatherIcon.classList.add('hourly-forecast__weathericon')
+	
+	if (mainWeather === "Clouds" && sunset > UTC) {
+		hourlyWeatherIcon.src = "./Assets/partly-cloudy-day.svg"
+	} else if (mainWeather === "Clouds" && sunset <= UTC) {
+		hourlyWeatherIcon.src = "./Assets/partly-cloudy-night.svg"
+	} else if (mainWeather === "Rain" && sunset > UTC) {
+		hourlyWeatherIcon.src = "./Assets/partly-cloudy-day-rain.svg"
+	} else if (mainWeather === "Rain"  && sunset <= UTC) {
+		hourlyWeatherIcon.src = "./Assets/partly-cloudy-night-rain.svg"
+	} else if (mainWeather === "Snow" && sunset > UTC) {
+		hourlyWeatherIcon.src = "./Assets/partly-cloudy-day-snow.svg"
+	} else if (mainWeather === "Snow" && sunset <= UTC) {
+		hourlyWeatherIcon.src = "./Assets/partly-cloudy-night-snow.svg"
+	} else if (sunset >= UTC) {
+		hourlyWeatherIcon.src = "./Assets/clear-night.svg"
+	} else {
+		hourlyWeatherIcon.src = "./Assets/clear-day.svg"
+	}
+
+	let hourlyTemp = document.createElement('p')
+	hourlyTemp.classList.add('hourly-forecast__temp')
+	hourlyTemp.innerText = Math.floor(parseInt(hourlyWeather?.main?.temp - 273.15) * 9 / 5 + 32) + "°";
+
+	hourlyItem.appendChild(hourly);
+	hourlyItem.appendChild(hourlyWeatherIcon);
+	hourlyItem.appendChild(hourlyTemp);
+
+	return hourlyItem;
+}
+
+function createHourlyItem(hourlyForecast) {
+
+	hourlyForecastList.innerHTML = "";
+	
+	const limit = Math.min(hourlyForecast.length, 3);
+	for(let i = 0; i < limit; i++){
+		let h = hourlyForecast[i]
+		const item = updateForecast(h);
+		hourlyForecastList.appendChild(item);
+	}
+}
+
+
+
+
+
