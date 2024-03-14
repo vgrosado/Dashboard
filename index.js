@@ -9,7 +9,8 @@ let timezone = "";
 let localTime = new Date().toLocaleTimeString('en-US', {
 	hour: 'numeric', minute: 'numeric', hour12: true
 });
-let UTC = new Date().getTime();
+let UTC = new Date().toLocaleTimeString();
+let isNight;
 let lowTemp; 
 let highTemp; 
 let sunrise;
@@ -50,9 +51,6 @@ function getUserWeather(lat, lon) {
 		});
 };
 
-
-
-
 //access user device's GPS
 async function getPosition() {
 	navigator.geolocation.getCurrentPosition((position) => {
@@ -77,7 +75,6 @@ searchInput.addEventListener('change', (event) => {
 	console.log(city)
 	handleSearch(city)
 })
-
 
 
 //function to take city input and call api for weather
@@ -137,14 +134,21 @@ function handleTheme() {
 
 //update weather card with weather variable
 function updateWeather(weather) {
-	sunset = weather?.sys?.sunset * 1000;
-	sunrise = weather?.sys?.sunrise * 1000;
+	sunrise = new Date(weather?.sys?.sunrise * 1000).toLocaleTimeString();
+	sunset = new Date(weather?.sys?.sunset * 1000).toLocaleTimeString();
 	weatherDescription = weather.weather[0].description;
 	highTemp = Math.floor(parseInt((weather.main.temp_max - 273.15) * 9 / 5 + 32)) + "°";
 	lowTemp = Math.floor(parseInt((weather.main.temp_min - 273.15) * 9 / 5 + 32)) + "°";
 	const newTime = new Date();
+	isNight = UTC < sunset || UTC > sunrise;
 
-	if(sunset <= UTC) {
+	console.log(sunset)
+	console.log(sunrise)
+    console.log(UTC)
+
+
+
+	if(isNight) {
 		body.classList.add('dark')
 	} else {
 		body.classList.remove('dark')
@@ -176,22 +180,14 @@ function updateWeather(weather) {
 	temp.innerText = Math.floor(parseInt((weather.main.temp - 273.15) * 9 / 5 + 32)) + "°";
 
 	//set weather icon, checks against current city conditions & local time vs sunset
-	if (weather.weather[0].main === "Clouds" && sunset > UTC) {
-		weatherIcon.src = "./Assets/partly-cloudy-day.svg"
-	} else if (weather.weather[0].main === "Clouds" && sunset <= UTC) {
-		weatherIcon.src = "./Assets/partly-cloudy-night.svg"
-	} else if (weather.weather[0].main === "Rain" && sunset > UTC) {
-		weatherIcon.src = "./Assets/partly-cloudy-day-rain.svg"
-	} else if (weather.weather[0].main === "Rain" && sunset <= UTC) {
-		weatherIcon.src = "./Assets/partly-cloudy-night-rain.svg"
-	} else if (weather.weather[0].main.includes("Snow") && sunset > UTC) {
-		weatherIcon.src = "./Assets/partly-cloudy-day-snow.svg"
-	} else if (weather.weather[0].main.includes("Snow") && sunset <= UTC) {
-		weatherIcon.src = "./Assets/partly-cloudy-night-snow.svg"
-	} else if (sunset < localTime) {
-		weatherIcon.src = "./Assets/clear-night.svg"
+	if (weather.weather[0].main === "Clouds") {
+		weatherIcon.src = isNight ? "./Assets/partly-cloudy-night.svg" : "./Assets/partly-cloudy-day.svg";
+	} else if (weather.weather[0].main === "Rain") {
+		weatherIcon.src = isNight ? "./Assets/partly-cloudy-night-rain.svg" : "./Assets/partly-cloudy-day-rain.svg";
+	} else if (weather.weather[0].main.includes("Snow")) {
+		weatherIcon.src = isNight ? "./Assets/partly-cloudy-night-snow.svg" : "./Assets/partly-cloudy-day-snow.svg";
 	} else {
-		weatherIcon.src = "./Assets/clear-day.svg"
+		weatherIcon.src = isNight ? "./Assets/clear-night.svg" : "./Assets/clear-day.svg";
 	}
 
 	const details = document.getElementById('#details')
@@ -225,7 +221,7 @@ function updateForecast(hourlyWeather) {
 	}
 	let hours = hourlyWeather?.dt * 1000;
 
-	let details = document.getElementById('#work')
+	let details = document.getElementById('#weatherdetails')
 
 	if(sunset >= UTC) {
 		details.innerText = weatherDescription + "." + " High for the day is " + highTemp;
@@ -246,22 +242,14 @@ function updateForecast(hourlyWeather) {
 	let hourlyWeatherIcon = document.createElement('img');
 	hourlyWeatherIcon.classList.add('hourly-forecast__weathericon')
 	
-	if (mainWeather === "Clouds" && sunset > UTC) {
-		hourlyWeatherIcon.src = "./Assets/partly-cloudy-day.svg"
-	} else if (mainWeather === "Clouds" && sunset <= UTC) {
-		hourlyWeatherIcon.src = "./Assets/partly-cloudy-night.svg"
-	} else if (mainWeather === "Rain" && sunset > UTC) {
-		hourlyWeatherIcon.src = "./Assets/partly-cloudy-day-rain.svg"
-	} else if (mainWeather === "Rain"  && sunset <= UTC) {
-		hourlyWeatherIcon.src = "./Assets/partly-cloudy-night-rain.svg"
-	} else if (mainWeather === "Snow" && sunset > UTC) {
-		hourlyWeatherIcon.src = "./Assets/partly-cloudy-day-snow.svg"
-	} else if (mainWeather === "Snow" && sunset <= UTC) {
-		hourlyWeatherIcon.src = "./Assets/partly-cloudy-night-snow.svg"
-	} else if (sunset >= UTC) {
-		hourlyWeatherIcon.src = "./Assets/clear-night.svg"
+	if (mainWeather === "Clouds") {
+		hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night.svg" : "./Assets/partly-cloudy-day.svg";
+	} else if (mainWeather === "Rain") {
+		hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night-rain.svg" : "./Assets/partly-cloudy-day-rain.svg";
+	} else if (mainWeather === "Snow") {
+		hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night-snow.svg" : "./Assets/partly-cloudy-day-snow.svg";
 	} else {
-		hourlyWeatherIcon.src = "./Assets/clear-day.svg"
+		hourlyWeatherIcon.src = isNight ? "./Assets/clear-night.svg" : "./Assets/clear-day.svg";
 	}
 
 	let hourlyTemp = document.createElement('p')
@@ -286,6 +274,9 @@ function createHourlyItem(hourlyForecast) {
 		hourlyForecastList.appendChild(item);
 	}
 }
+
+
+
 
 
 
