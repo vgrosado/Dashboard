@@ -36,6 +36,7 @@
             <div class="forecast__tempicon-wrapper">
                 <div class="forecast__temp-wrapper">
                     <p class="forecast__temp" id="#temp"></p>
+                    <p class="forecast__feelslike" id="#feelslike"></p>
                     <p class="forecast__details" id="#details"></p>
                 </div>
                 <img class="forecast__icon" src="" id="#weathergif"></img>
@@ -51,14 +52,35 @@
                 </div>
             </div>
         </article>
-        <article class="hourly-forecast">
+        <article class="hourly-forecast" id="#hourlyforecast">
             <div class="hourly-forecast__details-wrapper">
-            <h3 class="hourly-forecast__details" id="#weatherdetails"></h3>
-        </div>
+                <h3 class="hourly-forecast__details" id="#weatherdetails"></h3>
+            </div>
             <ul class="hourly-forecast__list"></ul>
         </article>
-        </div>
     </section>
+    <article class="enviromental-info">
+        <div class="enviromental-info__card" id="#card">
+            <p class="enviromental-info__title">Humidity</p>
+            <img class="enviromental-info__icon" src="./Assets/raindrops.svg" id="#humidityicon">
+            <p class="enviromental-info__details" id="#humidity"></p>
+        </div>
+        <div class="enviromental-info__card" id="#card">
+            <p class="enviromental-info__title">Wind</p>
+            <img class="enviromental-info__icon" src="./Assets/windsock.svg" id="#windicon">
+            <p class="enviromental-info__details" id="#wind"></p>
+        </div>
+        <div class="enviromental-info__card" id="#card">
+            <p class="enviromental-info__title">Sunrise</p>
+            <img class="enviromental-info__icon" src="./Assets/sunrise.svg" id="#sunriseicon">
+            <p class="enviromental-info__details" id="#sunrise"></p>
+        </div>
+        <div class="enviromental-info__card" id="#card">
+            <p class="enviromental-info__title" id="#suntitle">Sunset</p>
+            <img class="enviromental-info__icon" src="./Assets/sunset.svg" id="#sunseticon">
+            <p class="enviromental-info__details" id="#sunset"></p>
+        </div>
+    </article>
 </body>
 
 </html>
