@@ -1,4 +1,5 @@
-const APIKEY = "bedd81aab35b46aee7f7356339be92b1";
+const WEATHERAPIKEY = "bedd81aab35b46aee7f7356339be92b1";
+const NEWSAPIKEY = "pub_40178b237df6449c1b856e7f72118db880c99";
 let city = "";
 let weather;
 let weatherDescription = "";
@@ -22,12 +23,15 @@ const loading = document.querySelector('.forecast__spinner');
 const locationIcon = document.getElementById('#locationicon')
 const weatherIcon = document.getElementById('#weathergif');
 const enviromentalCards = document.querySelectorAll('.enviromental-info__card');
-const hourlyForecastWrapper = document.getElementById('#hourlyforecast')
+const hourlyForecastWrapper = document.getElementById('#hourlyforecast');
+let news;
+let newsArticles;
+
 
 // get users current weather
 function getUserWeather(lat, lon) {
 	axios
-		.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIKEY}`)
+		.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHERAPIKEY}`)
 		.then((response) => {
 			weather = response.data;
 			userWeather = weather?.timezone;
@@ -46,7 +50,7 @@ function getUserWeather(lat, lon) {
 			locationIcon.classList.remove('no')
 		}).then(() => {
 			axios
-				.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${APIKEY}`)
+				.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${WEATHERAPIKEY}`)
 				.then((response) => {
 					forecast = response.data;
 					hourlyWeather = forecast?.list;
@@ -102,13 +106,13 @@ searchInput.addEventListener('change', (event) => {
 function handleSearch(city) {
 	if (!city) return;
 	axios
-		.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${APIKEY}`)
+		.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHERAPIKEY}`)
 		.then((response) => {
 			weather = response.data;
 			updateWeather(weather)
 		}).then(() => {
 			axios
-				.get(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${APIKEY}`)
+				.get(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${WEATHERAPIKEY}`)
 				.then((response) => {
 					forecast = response.data;
 					hourlyWeather = forecast?.list;
@@ -162,7 +166,7 @@ function handleTheme() {
 
 //update weather card with weather variable
 function updateWeather(weather) {
-	isNight = UTC > sunset && UTC < sunrise;
+	isNight = UTC > sunset || UTC < sunrise;
 	weatherDescription = weather.weather[0].description;
 	highTemp = Math.floor(parseInt((weather.main.temp_max - 273.15) * 9 / 5 + 32)) + "°";
 	lowTemp = Math.floor(parseInt((weather.main.temp_min - 273.15) * 9 / 5 + 32)) + "°";
@@ -211,7 +215,7 @@ function updateWeather(weather) {
 		weatherIcon.src = isNight ? "./Assets/partly-cloudy-night.svg" : "./Assets/partly-cloudy-day.svg";
 	} else if (weather.weather[0].main === "Rain") {
 		weatherIcon.src = isNight ? "./Assets/partly-cloudy-night-rain.svg" : "./Assets/partly-cloudy-day-rain.svg";
-	} else if (weather.weather[0].main.includes("Snow")) {
+	} else if (weather.weather[0].main === "Snow") {
 		weatherIcon.src = isNight ? "./Assets/partly-cloudy-night-snow.svg" : "./Assets/partly-cloudy-day-snow.svg";
 	} else {
 		weatherIcon.src = isNight ? "./Assets/starry-night.svg" : "./Assets/clear-day.svg";
@@ -247,11 +251,7 @@ function updateWeather(weather) {
 
 }
 
-
-
-
 const hourlyForecastList = document.querySelector('.hourly-forecast__list');
-
 function updateForecast(hourlyWeather) {
 
 	let mainWeather;
@@ -285,16 +285,17 @@ function updateForecast(hourlyWeather) {
 	console.log(sunset)
 	console.log(sunrise)
 	console.log(forecastTime)
+	console.log(UTC)
 
 	let hourlyWeatherIcon = document.createElement('img');
 	hourlyWeatherIcon.classList.add('hourly-forecast__weathericon')
 
 	if (mainWeather === "Clouds") {
-		hourlyWeatherIcon.src = forecastTime > sunset || forecastTime < sunrise ? "./Assets/partly-cloudy-night.svg" : "./Assets/partly-cloudy-day.svg";
+		hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night.svg" : "./Assets/partly-cloudy-day.svg";
 	} else if (mainWeather === "Rain") {
-		hourlyWeatherIcon.src = forecastTime > sunset || forecastTime < sunrise  ? "./Assets/partly-cloudy-night-rain.svg" : "./Assets/partly-cloudy-day-rain.svg";
+		hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night-rain.svg" : "./Assets/partly-cloudy-day-rain.svg";
 	} else if (mainWeather === "Snow") {
-		hourlyWeatherIcon.src = forecastTime > sunset || forecastTime < sunrise ? "./Assets/partly-cloudy-night-snow.svg" : "./Assets/partly-cloudy-day-snow.svg";
+		hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night-snow.svg" : "./Assets/partly-cloudy-day-snow.svg";
 	} else {
 		hourlyWeatherIcon.src = isNight ? "./Assets/clear-night.svg" : "./Assets/clear-day.svg";
 	}
@@ -322,6 +323,54 @@ function createHourlyItem(hourlyForecast) {
 		hourlyForecastList.appendChild(item);
 	}
 }
+
+axios
+	.get(`https://newsdata.io/api/1/news?apikey=${NEWSAPIKEY}&country=us&language=en&image=1`)
+	.then((response) => {
+		news = response.data;
+		newsArticles = news?.results;
+	}).then(() => {
+		const sortedArticles = newsArticles.filter((article, index) => {
+			// Check if the current article's title is unique by comparing with previous titles
+			return newsArticles.findIndex((prevArticle) => prevArticle?.title === article?.title) === index
+		});
+		console.log(sortedArticles)
+		console.log(news)
+		createNewsArticles(sortedArticles);
+	})
+	.catch((error) => {
+		console.error("Error fetching data:", error);
+	});
+
+const newsWrapper = document.getElementById('#newslist');
+function updateNews(news) {
+
+	const newsLink = document.createElement('a')
+	newsLink.classList.add('news__item')
+	newsLink.href = news.link;
+
+	const newsCover = document.createElement('img');
+	newsCover.classList.add('news__cover')
+	newsCover.src = news.image_url;
+
+	const newsTitle = document.createElement('p');
+	newsTitle.classList.add('news__title')
+	newsTitle.innerText = news.title;
+
+	newsLink.appendChild(newsCover);
+	newsLink.appendChild(newsTitle);
+	
+	return newsLink;
+}
+
+function createNewsArticles(articles) {
+	for (let i = 0; i < articles.length; i++) {
+		let a = articles[i]
+		const thing = updateNews(a);
+		newsWrapper.appendChild(thing);
+	}
+}
+
 
 
 

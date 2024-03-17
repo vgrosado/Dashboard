@@ -311,7 +311,7 @@
         color: white;
         font-size: 1.25rem;
     }
-    
+
 }
 
 .nothing {
@@ -361,4 +361,68 @@
         color: white;
     }
 
+}
+
+.news-heading {
+    color: white;
+    font-weight: normal;
+    font-size: 1.5rem;
+    text-align: start;
+}
+
+.news {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 30vh;
+    box-sizing: border-box;
+    padding: 1rem;
+    width: 100%;
+    margin: .5rem 0rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 #00000045;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+
+    .news__list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    overflow: auto;
+    }
+
+    .news__item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+        height: 100%;
+        width: 50%;
+        margin: 0rem .5rem;
+        text-decoration: none;
+    }
+
+    .news__cover {
+        object-fit: cover;
+        object-position: top;
+        border-radius: 10px;
+        height: 65%;
+        width: 100%;
+    }
+
+    .news__title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+        font-size: small;
+        color: white;
+    }
+}
+
+.trading-widget-wrapper {
+    margin: 1rem 0rem;
 }
