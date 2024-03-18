@@ -32,17 +32,8 @@
         </div>
     </header>
     <section class="forecast">
-        <!-- <h1 class="forecast__title">Forecast</h1> -->
         <article class="forecast__weather-card" id="weathercard">
             <img class="forecast__spinner" id="#loading" src="">
-            <div class="forecast__tempicon-wrapper">
-                <div class="forecast__temp-wrapper">
-                    <p class="forecast__temp" id="#temp"></p>
-                    <p class="forecast__feelslike" id="#feelslike"></p>
-                    <p class="forecast__details" id="#details"></p>
-                </div>
-                <img class="forecast__icon" src="" id="#weathergif"></img>
-            </div>
             <div class="forecast__timedatelocation-wrapper">
                 <div class="forecast__location-wrapper">
                     <h3 class="forecast__location" id="#location"></h3>
@@ -52,6 +43,16 @@
                     <p class="forecast__date" id="#date"></p>
                     <p class="forecast__time" id="#time"></p>
                 </div>
+            </div>
+            <div class="forecast__tempicon-wrapper">
+                <div class="forecast__temp-wrapper">
+                    <p class="forecast__temp" id="#temp"></p>
+                    <div class="forecast__tablet-div">
+                        <p class="forecast__feelslike" id="#feelslike"></p>
+                        <p class="forecast__details" id="#details"></p>
+                    </div>
+                </div>
+                <img class="forecast__icon" src="" id="#weathergif"></img>
             </div>
         </article>
         <article class="hourly-forecast" id="#hourlyforecast">
@@ -127,7 +128,6 @@
                     }
                 </script>
         </div>
-        <!-- TradingView Widget END -->
     </div>
 
 </body>

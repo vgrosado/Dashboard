@@ -3,19 +3,20 @@ const NEWSAPIKEY = "pub_40178b237df6449c1b856e7f72118db880c99";
 let city = "";
 let weather;
 let weatherDescription = "";
-let userWeather;
-let forecast;
-let hourlyWeather;
+let userWeather = "";
+let forecast = [];
+let hourlyWeather = [];
 let timezone = "";
+let localTimeInTargetZone = "";
 let localTime = new Date().toLocaleTimeString('en-US', {
 	hour: 'numeric', minute: 'numeric', hour12: true
 });
 let UTC = new Date().toLocaleTimeString();
-let isNight;
+let isNight = "";
 let lowTemp;
 let highTemp;
-let sunrise;
-let sunset;
+let sunrise = "";
+let sunset = "";
 let weekday = new Intl.DateTimeFormat("en-us", { weekday: "long" }).format(new Date());
 let userLatitude = null;
 let userLongitude = null;
@@ -24,8 +25,8 @@ const locationIcon = document.getElementById('#locationicon')
 const weatherIcon = document.getElementById('#weathergif');
 const enviromentalCards = document.querySelectorAll('.enviromental-info__card');
 const hourlyForecastWrapper = document.getElementById('#hourlyforecast');
-let news;
-let newsArticles;
+let news = [];
+let newsArticles = [];
 
 
 // get users current weather
@@ -36,7 +37,6 @@ function getUserWeather(lat, lon) {
 			weather = response.data;
 			userWeather = weather?.timezone;
 			updateWeather(weather)
-			console.log(weather)
 			loading.classList.add('no')
 			enviromentalCards.forEach((card) => {
 				card.classList.remove('nothing');
@@ -166,7 +166,7 @@ function handleTheme() {
 
 //update weather card with weather variable
 function updateWeather(weather) {
-	isNight = UTC > sunset || UTC < sunrise;
+	isNight = localTimeInTargetZone >= sunset || localTimeInTargetZone < sunrise;
 	weatherDescription = weather.weather[0].description;
 	highTemp = Math.floor(parseInt((weather.main.temp_max - 273.15) * 9 / 5 + 32)) + "°";
 	lowTemp = Math.floor(parseInt((weather.main.temp_min - 273.15) * 9 / 5 + 32)) + "°";
@@ -192,7 +192,7 @@ function updateWeather(weather) {
 	}
 
 	// Get the time in the specified timezone
-	const localTimeInTargetZone = newTime.toLocaleString('en-US', {
+	localTimeInTargetZone = newTime.toLocaleString('en-US', {
 		timeZone: timezone, hour: 'numeric', minute: 'numeric', hour12: true
 	});
 
@@ -255,16 +255,13 @@ const hourlyForecastList = document.querySelector('.hourly-forecast__list');
 function updateForecast(hourlyWeather) {
 
 	let mainWeather;
-
 	if (hourlyWeather.weather === undefined) {
 		mainWeather = null;
 	} else {
-		mainWeather = hourlyWeather.weather[0].main;
+		mainWeather = hourlyWeather.weather[0]?.main;
 	}
-	let hours = hourlyWeather?.dt * 1000;
 
 	let details = document.getElementById('#weatherdetails')
-
 	if (!isNight) {
 		details.innerText = "High for the day is " + highTemp;
 	} else {
@@ -274,32 +271,31 @@ function updateForecast(hourlyWeather) {
 	let hourlyItem = document.createElement('li');
 	hourlyItem.classList.add('hourly-forecast__item');
 
-	let forecastTime = new Date(hours).toLocaleString('en-US', {
-		timeZone: timezone, hour: 'numeric', hour12: true
+	let hours = new Date(hourlyWeather.dt * 1000).toLocaleString('en-US', {
+		timeZone: timezone, hour: 'numeric', minute: 'numeric', hour12: true
 	});
 
+	
 	let hourly = document.createElement('p')
 	hourly.classList.add('hourly-forecast__hour');
-	hourly.innerText = forecastTime;
+	hourly.innerText = hours;
 
-	console.log(sunset)
-	console.log(sunrise)
-	console.log(forecastTime)
-	console.log(UTC)
+	
+	console.log("forecast Time " + hours + " vs " + sunset)
+	console.log("forecast Time " + hours + " vs " + sunrise)
 
 	let hourlyWeatherIcon = document.createElement('img');
 	hourlyWeatherIcon.classList.add('hourly-forecast__weathericon')
 
 	if (mainWeather === "Clouds") {
-		hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night.svg" : "./Assets/partly-cloudy-day.svg";
-	} else if (mainWeather === "Rain") {
-		hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night-rain.svg" : "./Assets/partly-cloudy-day-rain.svg";
-	} else if (mainWeather === "Snow") {
-		hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night-snow.svg" : "./Assets/partly-cloudy-day-snow.svg";
-	} else {
-		hourlyWeatherIcon.src = isNight ? "./Assets/clear-night.svg" : "./Assets/clear-day.svg";
-	}
-
+        hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night.svg" : "./Assets/partly-cloudy-day.svg";
+    } else if (mainWeather === "Rain") {
+        hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night-rain.svg" : "./Assets/partly-cloudy-day-rain.svg";
+    } else if (mainWeather === "Snow") {
+        hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night-snow.svg" : "./Assets/partly-cloudy-day-snow.svg";
+    } else {
+        hourlyWeatherIcon.src = isNight ? "./Assets/starry-night.svg" : "./Assets/clear-day.svg";
+    }
 
 	let hourlyTemp = document.createElement('p')
 	hourlyTemp.classList.add('hourly-forecast__temp')
@@ -334,8 +330,6 @@ axios
 			// Check if the current article's title is unique by comparing with previous titles
 			return newsArticles.findIndex((prevArticle) => prevArticle?.title === article?.title) === index
 		});
-		console.log(sortedArticles)
-		console.log(news)
 		createNewsArticles(sortedArticles);
 	})
 	.catch((error) => {
