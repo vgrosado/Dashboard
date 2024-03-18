@@ -11,12 +11,14 @@ let localTimeInTargetZone = "";
 let localTime = new Date().toLocaleTimeString('en-US', {
 	hour: 'numeric', minute: 'numeric', hour12: true
 });
-let UTC = new Date().toLocaleTimeString();
+let UTC = new Date().getHours();
 let isNight = "";
 let lowTemp;
 let highTemp;
 let sunrise = "";
 let sunset = "";
+let sunriseHours;
+let sunsetHours;
 let weekday = new Intl.DateTimeFormat("en-us", { weekday: "long" }).format(new Date());
 let userLatitude = null;
 let userLongitude = null;
@@ -166,7 +168,7 @@ function handleTheme() {
 
 //update weather card with weather variable
 function updateWeather(weather) {
-	isNight = localTimeInTargetZone >= sunset || localTimeInTargetZone < sunrise;
+	isNight = UTC >= sunsetHours || UTC < sunriseHours;
 	weatherDescription = weather.weather[0].description;
 	highTemp = Math.floor(parseInt((weather.main.temp_max - 273.15) * 9 / 5 + 32)) + "°";
 	lowTemp = Math.floor(parseInt((weather.main.temp_min - 273.15) * 9 / 5 + 32)) + "°";
@@ -271,30 +273,36 @@ function updateForecast(hourlyWeather) {
 	let hourlyItem = document.createElement('li');
 	hourlyItem.classList.add('hourly-forecast__item');
 
-	let hours = new Date(hourlyWeather.dt * 1000).toLocaleString('en-US', {
-		timeZone: timezone, hour: 'numeric', minute: 'numeric', hour12: true
+	let hoursToDisplay = new Date(hourlyWeather.dt * 1000).toLocaleString('en-US', {
+		timeZone: timezone, hour: 'numeric', hour12: true
 	});
+
+	let hoursToCompare = new Date(hourlyWeather.dt * 1000).getHours();
+
+	sunriseHours = new Date(weather?.sys?.sunrise * 1000).getHours();
+	sunsetHours = new Date(weather?.sys?.sunset * 1000).getHours();
+
 
 	
 	let hourly = document.createElement('p')
 	hourly.classList.add('hourly-forecast__hour');
-	hourly.innerText = hours;
+	hourly.innerText = hoursToDisplay;
 
 	
-	console.log("forecast Time " + hours + " vs " + sunset)
-	console.log("forecast Time " + hours + " vs " + sunrise)
+	console.log("forecast Time " + hoursToCompare + " vs " + sunsetHours)
+	console.log("forecast Time " + hoursToCompare + " vs " + sunriseHours)
 
 	let hourlyWeatherIcon = document.createElement('img');
 	hourlyWeatherIcon.classList.add('hourly-forecast__weathericon')
 
 	if (mainWeather === "Clouds") {
-        hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night.svg" : "./Assets/partly-cloudy-day.svg";
+        hourlyWeatherIcon.src = hoursToCompare >= sunsetHours || hoursToCompare < sunriseHours ? "./Assets/partly-cloudy-night.svg" : "./Assets/partly-cloudy-day.svg";
     } else if (mainWeather === "Rain") {
-        hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night-rain.svg" : "./Assets/partly-cloudy-day-rain.svg";
+        hourlyWeatherIcon.src = hoursToCompare >= sunsetHours || hoursToCompare < sunriseHours   ? "./Assets/partly-cloudy-night-rain.svg" : "./Assets/partly-cloudy-day-rain.svg";
     } else if (mainWeather === "Snow") {
-        hourlyWeatherIcon.src = isNight ? "./Assets/partly-cloudy-night-snow.svg" : "./Assets/partly-cloudy-day-snow.svg";
+        hourlyWeatherIcon.src = hoursToCompare >= sunsetHours || hoursToCompare < sunriseHours  ? "./Assets/partly-cloudy-night-snow.svg" : "./Assets/partly-cloudy-day-snow.svg";
     } else {
-        hourlyWeatherIcon.src = isNight ? "./Assets/starry-night.svg" : "./Assets/clear-day.svg";
+        hourlyWeatherIcon.src = hoursToCompare >= sunsetHours || hoursToCompare < sunriseHours  ? "./Assets/starry-night.svg" : "./Assets/clear-day.svg";
     }
 
 	let hourlyTemp = document.createElement('p')
