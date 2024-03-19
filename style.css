@@ -9,7 +9,6 @@
     padding: 1rem;
     min-height: 100vh;
     background-position: center;
-    background-size: calc();
     background-repeat: no-repeat;
     background-image: linear-gradient(0deg,
             hsl(206deg 100% 50%) 0%,
@@ -391,6 +390,9 @@
     align-items: center;
     width: 100%;
     overflow: auto;
+    &::-webkit-scrollbar {
+        display: none;
+    }
     }
 
     .news__item {
