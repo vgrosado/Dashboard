@@ -4,6 +4,13 @@
     padding: 0;
 }
 
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .body {
     box-sizing: border-box;
     padding: 1rem;
